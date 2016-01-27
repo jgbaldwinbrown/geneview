@@ -52,16 +52,23 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     last_x = 0
     data = sorted(_gen_data(fhs, columns, sep), cmp=chr_loc_cmp)
 
+    xtick_label_set = set(map(str, range(15) + [16,18,20,22]))
     # Plotting the manhattan image
     plt.close() # in case plot accident
-    f, ax = plt.subplots(ncols=1, nrows=1, figsize=(12, 8), tight_layout=True)
-    ax = manhattanplot(data, ax=ax,
-                       xtick_label_set=set(map(str, range(15) + [16,18,20,22])))
+    #f, ax = plt.subplots(ncols=1, nrows=1, figsize=(12, 8), tight_layout=True)
+    #manhattanplot(data, ax=ax, xtick_label_set=xtick_label_set)
+
+    #ax = manhattanplot(data)
+
+    ax = manhattanplot(data, xtick_label_set=xtick_label_set)
+    #ax = manhattanplot(data, xtick_label_set=xtick_label_set, kind='line')
 
     # plot 0.05 line after multiple testing.
     ax.axhline(y=5, color='b')
     ax.axhline(y=7, color='r')
     if ymax is not None: ax.set_ylim(ymax=ymax)
+
+    ax.tick_params(labelsize=14)
 
     ax.set_xlabel('Chromosome', fontsize=18)
     ax.set_ylabel('-Log10 (P-value)', fontsize=18)
