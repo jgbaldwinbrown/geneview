@@ -46,9 +46,6 @@ def chr_loc_cmp(alocs, blocs):
 
 def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax):
 
-    if ',' in colors: colors = colors.split(',')
-    colors = cycle(colors)
-
     last_x = 0
     data = sorted(_gen_data(fhs, columns, sep), cmp=chr_loc_cmp)
 
@@ -59,17 +56,21 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     #manhattanplot(data, ax=ax, xtick_label_set=xtick_label_set)
 
     #ax = manhattanplot(data)
+    #ax = manhattanplot(data, CHR='23')
+    #ax = manhattanplot(data, CHR='22')
 
-    ax = manhattanplot(data, xtick_label_set=xtick_label_set)
+    ax = manhattanplot(data, color=colors, xtick_label_set=xtick_label_set)
     #ax = manhattanplot(data, xtick_label_set=xtick_label_set, kind='line')
 
-    # plot 0.05 line after multiple testing.
+    # plot abline after multiple testing.
     ax.axhline(y=5, color='b')
     ax.axhline(y=7, color='r')
     if ymax is not None: ax.set_ylim(ymax=ymax)
 
-    ax.tick_params(labelsize=14)
+    if title:
+        ax.set_title(title, loc='center', fontsize=18)
 
+    ax.tick_params(labelsize=14)
     ax.set_xlabel('Chromosome', fontsize=18)
     ax.set_ylabel('-Log10 (P-value)', fontsize=18)
 
