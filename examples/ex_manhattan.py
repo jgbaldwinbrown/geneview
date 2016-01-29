@@ -44,7 +44,8 @@ def chr_cmp(a, b):
 def chr_loc_cmp(alocs, blocs):
     return chr_cmp(alocs[0], blocs[0]) or cmp(alocs[1], blocs[1])
 
-def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax):
+def manhattan(fhs, columns, sep, no_log, image_path, title, colors, 
+              xlabel, ylabel, lines, ymax):
 
     last_x = 0
     data = sorted(_gen_data(fhs, columns, sep), cmp=chr_loc_cmp)
@@ -52,14 +53,14 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     xtick_label_set = set(map(str, range(15) + [16,18,20,22]))
     # Plotting the manhattan image
     plt.close() # in case plot accident
-    #f, ax = plt.subplots(ncols=1, nrows=1, figsize=(12, 8), tight_layout=True)
-    #manhattanplot(data, ax=ax, xtick_label_set=xtick_label_set)
+    f, ax = plt.subplots(ncols=1, nrows=1, figsize=(14, 8), tight_layout=True)
+    manhattanplot(data, color=colors, mlog10=not no_log, s=40, ax=ax)
 
     #ax = manhattanplot(data)
     #ax = manhattanplot(data, CHR='23')
     #ax = manhattanplot(data, CHR='22')
 
-    ax = manhattanplot(data, color=colors, xtick_label_set=xtick_label_set)
+    #ax = manhattanplot(data, color=colors, xtick_label_set=xtick_label_set)
     #ax = manhattanplot(data, xtick_label_set=xtick_label_set, kind='line')
 
     # plot abline after multiple testing.
@@ -71,8 +72,8 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
         ax.set_title(title, loc='center', fontsize=18)
 
     ax.tick_params(labelsize=14)
-    ax.set_xlabel('Chromosome', fontsize=18)
-    ax.set_ylabel('-Log10 (P-value)', fontsize=18)
+    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel(ylabel, fontsize=18)
 
     print >> sys.stderr, 'saving to: %s' % image_path
     plt.show()
@@ -90,6 +91,8 @@ def main():
     p.add_option("--cols", dest="cols", help="zero-based column indexes to get "
                  "chr, position, p-value respectively e.g. %default", 
                  default="0,1,2")
+    p.add_option("--sep", help="data separator, default is any space",
+                 default=None, dest="sep")
     p.add_option("--colors", dest="colors", help="cycle through these colors",
                  default="#000000,#969696")
     p.add_option("--colorful", default=False, dest="colorful", action="store_true",
@@ -100,10 +103,12 @@ def main():
                  default="manhattan.png")
     p.add_option("--title", help="title for the image.", default=None, 
                  dest="title")
+    p.add_option("--xlabel", help="The xlabel.", default="Chromosome", 
+                 dest="xlabel")
+    p.add_option("--ylabel", help="The ylabel.", default="-Log10 (P-value)", 
+                 dest="ylabel")
     p.add_option("--ymax", help="max (logged) y-value for plot", dest="ymax", 
                  type='float')
-    p.add_option("--sep", help="data separator, default is any space",
-                 default=None, dest="sep")
     p.add_option("--lines", default=False, dest="lines", action="store_true",
                  help="plot the p-values as lines extending from the x-axis "
                  "rather than points in space. plotting will take longer "
@@ -116,8 +121,8 @@ def main():
 
     fhs = get_filehandles(args)
     columns = map(int, opts.cols.split(","))
-    manhattan(fhs, columns, opts.image, opts.no_log, opts.colors, opts.sep,
-              opts.title, opts.lines, opts.ymax)
+    manhattan(fhs, columns, opts.sep, opts.no_log, opts.image, opts.title, 
+              opts.colors, opts.xlabel, opts.ylabel, opts.lines, opts.ymax)
 
 if __name__ == "__main__":
     main()
