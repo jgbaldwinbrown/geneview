@@ -28,15 +28,14 @@ def _gen_data(fhs, columns, sep):
             yield float(toks[columns[2]])
 
 def qq(fhs, columns, sep, no_log, image_path, title, color, 
-              xlabel, ylabel, lines, ymax):
+       xlabel, ylabel, ymax):
 
-    last_x = 0
     data = [d for d in _gen_data(fhs, columns, sep)]
 
     # Plotting the qq image
     plt.close() # in case plot accident
     #f, ax = plt.subplots(ncols=1, nrows=1, figsize=(14, 8), tight_layout=True)
-    #qqplot(data, color=color, mlog10=not no_log, ax=ax)
+    f, ax = plt.subplots(ncols=1, nrows=1, tight_layout=True)
     ax = qqplot(data, color=color, mlog10=not no_log)
     if ymax is not None: ax.set_ylim(ymax=ymax)
 
@@ -48,8 +47,8 @@ def qq(fhs, columns, sep, no_log, image_path, title, color,
     ax.set_ylabel(ylabel, fontsize=18)
 
     print >> sys.stderr, 'saving to: %s' % image_path
-    plt.show()
     plt.savefig(image_path)
+    plt.show()
     
 
 def get_filehandles(args):
@@ -80,10 +79,6 @@ def main():
                  dest="ylabel")
     p.add_option("--ymax", help="max (logged) y-value for plot", dest="ymax", 
                  type='float')
-    p.add_option("--lines", default=False, dest="lines", action="store_true",
-                 help="plot the p-values as lines extending from the x-axis "
-                 "rather than points in space. plotting will take longer "
-                 "with this option.")
 
     opts, args = p.parse_args()
     if (len(args) == 0):
@@ -92,7 +87,7 @@ def main():
     fhs = get_filehandles(args)
     columns = map(int, opts.cols.split(","))
     qq(fhs, columns, opts.sep, opts.no_log, opts.image, opts.title, 
-       opts.color, opts.xlabel, opts.ylabel, opts.lines, opts.ymax)
+       opts.color, opts.xlabel, opts.ylabel, opts.ymax)
 
 if __name__ == "__main__":
     main()
