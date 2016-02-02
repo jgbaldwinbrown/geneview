@@ -15,7 +15,7 @@ import numpy as np
 
 sys.path.append('..')
 from geneview.gwas import qqplot
-
+from geneview import reset_default
 
 def _gen_data(fhs, columns, sep):
     """

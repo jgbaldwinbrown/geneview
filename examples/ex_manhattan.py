@@ -17,6 +17,11 @@ sys.path.append('..')
 from geneview.gwas import manhattanplot
 
 
+# setting color palette
+#import geneview as gv
+#gv.set()
+#gv.palplot(gv.color_palette("muted"))
+
 def _gen_data(fhs, columns, sep):
     """
     iterate over the files and yield chr, start, pvalue
@@ -54,7 +59,8 @@ def manhattan(fhs, columns, sep, no_log, image_path, title, colors,
     # Plotting the manhattan image
     plt.close() # in case plot accident
     f, ax = plt.subplots(ncols=1, nrows=1, figsize=(14, 8), tight_layout=True)
-    manhattanplot(data, color=colors, mlog10=not no_log, s=40, ax=ax)
+    #manhattanplot(data, color=colors, mlog10=not no_log, s=40, ax=ax)
+    manhattanplot(data, mlog10=not no_log, s=40, ax=ax)
 
     #ax = manhattanplot(data)
     #ax = manhattanplot(data, CHR='23')
@@ -76,8 +82,8 @@ def manhattan(fhs, columns, sep, no_log, image_path, title, colors,
     ax.set_ylabel(ylabel, fontsize=18)
 
     print >> sys.stderr, 'saving to: %s' % image_path
-    plt.show()
     plt.savefig(image_path)
+    plt.show()
     
 
 def get_filehandles(args):
