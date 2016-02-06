@@ -1,134 +1,19 @@
-"""
-    Copytright (c) Shujia Huang
-    Date: 2016-01-23
-
-    Plot a manhattan plot of the input file(s).
-    python %prog [options] files
-"""
-
-import optparse
 import sys
-from itertools import groupby, cycle
-from operator import itemgetter
-from matplotlib import pyplot as plt
-import numpy as np
 
-sys.path.append('..')
+import csv
+import matplotlib.pyplot as plt
+
+sys.path.append('..')  
 from geneview.gwas import manhattanplot
 
+xtick = ['1', '2','3','4','5','6','7','8','9','10','11','12','13',
+         '14','16','18', '20','22']
+with open("data/test_data.csv") as f:
+    f_csv = csv.reader(f)
+    headers = next(f_csv)
+    data = [[row[0], int(row[2]), float(row[3])] for row in f_csv]
 
-# setting color palette
-#import geneview as gv
-#gv.set()
-#gv.palplot(gv.color_palette("muted"))
+ax = manhattanplot(data, xlabel="Chromosome", ylabel="-Log10(P-value)",
+                   xtick_label_set = set(xtick))
 
-def _gen_data(fhs, columns, sep):
-    """
-    iterate over the files and yield chr, start, pvalue
-    """
-    for fh in fhs:
-        for line in fh:
-            if line[0] == '#': continue
-            toks = line.strip('\n').split(sep) if sep else line.strip('\n').split()
-            yield toks[columns[0]], int(toks[columns[1]]), float(toks[columns[2]])
-
-def chr_cmp(a, b):
-    a = a.lower().replace('_', '') 
-    b = b.lower().replace('_', '')
-    achr = a[3:] if a.startswith('chr') else a
-    bchr = b[3:] if b.startswith('chr') else b
-
-    try:
-        return cmp(int(achr), int(bchr))
-    except ValueError:
-        if achr.isdigit() and not bchr.isdigit(): return -1
-        if bchr.isdigit() and not achr.isdigit(): return 1
-        # X Y
-        return cmp(achr, bchr)
-
-def chr_loc_cmp(alocs, blocs):
-    return chr_cmp(alocs[0], blocs[0]) or cmp(alocs[1], blocs[1])
-
-def manhattan(fhs, columns, sep, no_log, image_path, title, colors, 
-              xlabel, ylabel, lines, ymax):
-
-    last_x = 0
-    data = sorted(_gen_data(fhs, columns, sep), cmp=chr_loc_cmp)
-
-    xtick_label_set = set(map(str, range(15) + [16,18,20,22]))
-    # Plotting the manhattan image
-    plt.close() # in case plot accident
-    f, ax = plt.subplots(ncols=1, nrows=1, figsize=(14, 8), tight_layout=True)
-    #manhattanplot(data, color=colors, mlog10=not no_log, s=40, ax=ax)
-    manhattanplot(data, mlog10=not no_log, s=40, ax=ax)
-
-    #ax = manhattanplot(data)
-    #ax = manhattanplot(data, CHR='23')
-    #ax = manhattanplot(data, CHR='22')
-
-    #ax = manhattanplot(data, color=colors, xtick_label_set=xtick_label_set)
-    #ax = manhattanplot(data, xtick_label_set=xtick_label_set, kind='line')
-
-    # plot abline after multiple testing.
-    ax.axhline(y=5, color='b')
-    ax.axhline(y=7, color='r')
-    if ymax is not None: ax.set_ylim(ymax=ymax)
-
-    if title:
-        ax.set_title(title, loc='center', fontsize=18)
-
-    ax.tick_params(labelsize=14)
-    ax.set_xlabel(xlabel, fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=18)
-
-    print >> sys.stderr, 'saving to: %s' % image_path
-    plt.savefig(image_path)
-    plt.show()
-    
-
-def get_filehandles(args):
-    return (open(a) if a != "-" else sys.stdin for a in args)
-
-def main():
-    COLORFUL = '#6DC066,#FD482F,#8A2BE2,#3399FF'
-    p = optparse.OptionParser(__doc__)
-    p.add_option("--no-log", dest="no_log", help="don't do -log10(p) on the value",
-                 action='store_true', default=False)
-    p.add_option("--cols", dest="cols", help="zero-based column indexes to get "
-                 "chr, position, p-value respectively e.g. %default", 
-                 default="0,1,2")
-    p.add_option("--sep", help="data separator, default is any space",
-                 default=None, dest="sep")
-    p.add_option("--colors", dest="colors", help="cycle through these colors",
-                 default="#000000,#969696")
-    p.add_option("--colorful", default=False, dest="colorful", action="store_true",
-                 help="if set than enhance to cycle through these colors: "
-                 "%s" % COLORFUL)
-    p.add_option("--image", dest="image", 
-                 help="save the image_path to this file. e.g. %default",
-                 default="manhattan.png")
-    p.add_option("--title", help="title for the image.", default=None, 
-                 dest="title")
-    p.add_option("--xlabel", help="The xlabel.", default="Chromosome", 
-                 dest="xlabel")
-    p.add_option("--ylabel", help="The ylabel.", default="-Log10 (P-value)", 
-                 dest="ylabel")
-    p.add_option("--ymax", help="max (logged) y-value for plot", dest="ymax", 
-                 type='float')
-    p.add_option("--lines", default=False, dest="lines", action="store_true",
-                 help="plot the p-values as lines extending from the x-axis "
-                 "rather than points in space. plotting will take longer "
-                 "with this option.")
-
-    opts, args = p.parse_args()
-    if opts.colorful: opts.colors = COLORFUL
-    if (len(args) == 0):
-        sys.exit(not p.print_help())
-
-    fhs = get_filehandles(args)
-    columns = map(int, opts.cols.split(","))
-    manhattan(fhs, columns, opts.sep, opts.no_log, opts.image, opts.title, 
-              opts.colors, opts.xlabel, opts.ylabel, opts.lines, opts.ymax)
-
-if __name__ == "__main__":
-    main()
+plt.show()
