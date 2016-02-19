@@ -4,14 +4,11 @@ import csv
 import matplotlib.pyplot as plt
 
 sys.path.append('..')  
-from geneview.gwas import qqplot
+import geneview as gv
 
-pvalue=[]
-with open("data/test_data.csv") as f:
-    f_csv = csv.reader(f)
-    headers = next(f_csv)
-    pvalue = [float(row[3]) for row in f_csv]
+df = gv.util.load_dataset('GOYA_preview')
+gv.gwas.qqplot(df['pvalue'], color="#00bb33", 
+               xlabel="Expected p-value(-log10)", 
+               ylabel="Observed p-value(-log10)")    
 
-ax = qqplot(pvalue, color="#00bb33", xlabel="Expected p-value(-log10)", 
-            ylabel="Observed p-value(-log10)")
 plt.show()
