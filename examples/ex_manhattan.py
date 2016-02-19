@@ -12,4 +12,5 @@ gv.gwas.manhattanplot(df[['chrID','position','pvalue']],
                       xlabel="Chromosome", 
                       ylabel="-Log10(P-value)", 
                       xtick_label_set = set(xtick))
+plt.savefig('manhattan.png')
 plt.show()
