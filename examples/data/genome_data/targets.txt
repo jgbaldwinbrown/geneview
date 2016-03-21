@@ -1,0 +1,5 @@
+Samples	Factor	Fastq
+AP1IND1	sig1	SRR038845.fastq
+AP1IND2	sig1	SRR038846.fastq
+AP1UIND1	bgr1	SRR038848.fastq
+AP1UIND2	bgr1	SRR038850.fastq
