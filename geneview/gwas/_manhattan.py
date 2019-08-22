@@ -13,6 +13,7 @@ Thanks for Brentp's contributions
 from __future__ import print_function, division
 from itertools import groupby, cycle
 from operator import itemgetter
+import functools
 
 import numpy as np
 from pandas import DataFrame
@@ -176,7 +177,7 @@ def manhattanplot(data, ax=None, xlabel=None, ylabel=None, color=None,
 
         if CHR is not None and seqid != CHR: continue
         
-        color = colors.next()
+        color = next(colors)
         region_xs = [last_x + r for r in rlist['pos']]
         x.extend(region_xs)
         y.extend(rlist['pvalue'])
@@ -217,7 +218,7 @@ def manhattanplot(data, ax=None, xlabel=None, ylabel=None, color=None,
 
     if CHR is None:
         xs_by_id = [(k, xs_by_id[k])
-                     for k in sorted(xs_by_id.keys(), cmp=chr_id_cmp)
+                     for k in sorted(xs_by_id.keys(), key=functools.cmp_to_key(chr_id_cmp))
                      if k in xtick_label_set]
 
         ax.set_xticks([c[1] for c in xs_by_id])

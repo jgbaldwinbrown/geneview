@@ -7,6 +7,9 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
+def cmp(a, b):
+    return (a > b) - (a < b)
+
 def chr_id_cmp(a, b):
     """
     Sorted the chromosome by the order.
